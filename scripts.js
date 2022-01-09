@@ -1,61 +1,74 @@
-const choices = ["rock", "paper", "scizzors"]
 
+// set up choices
+const choices = ["rock", "paper", "scissors"];
+
+// function to generate computer choice
 function computerPlay() {
-    return choices[Math.floor(Math.random() * choices.length)];
-} 
+    return(choices[Math.floor(Math.random() * choices.length)]);
+}
 
-function playRound() {
-    let playerSelection = prompt("Your move:").toLowerCase();
-    let computerSelection = computerPlay();
+// set up battle_versus as String
+const battle_versus = document.querySelector('.battle-versus');
+battle_versus.innerHTML = "Rock, paper, scissors... Shoot!";
 
-    let winResult = "You win! " + playerSelection + " beats " + computerSelection + ".";
-    let loseResult = "You lose. " + computerSelection + " beats " + playerSelection + ".";
+// set up result_beats, result_battle as Strings
+const result_beats = document.querySelector('#result-beats');
+const result_battle = document.querySelector('#result-battle');
+result_beats.innerHTML = "Choose an attack below!";
+result_battle.innerHTML = "...";
 
-    function score(playerSelection, computerSelection) {
+// set up score count
+const player_score = document.querySelector('#player-score');
+const computer_score = document.querySelector('#computer-score');
 
-        if (playerSelection == computerSelection) {
-            return "Tie.";
+function updateScore(combatant_score) {
+    let score = Number(combatant_score.innerHTML) + 1;
+    combatant_score.innerHTML = score;
+}
+
+// function to announce game over
+function gameOver(combatant_victory) {
+    if (Number(combatant_victory.innerHTML) == 5) {
+        alert("Game over! " + result_battle.innerHTML);
+    } else {
+        let nothing = "happens";
+    }
+}
+
+// get value from player choice button
+const buttons = document.querySelectorAll('button');
+buttons.forEach((button) => {
+    button.addEventListener('click', () => {
+
+        // record player and computer choices in battle_versus
+        let player_choice = button.innerHTML;
+        let computer_choice = computerPlay();
+        battle_versus.innerHTML = (player_choice + " vs. " + computer_choice + "...");
+
+        // check for battle tie
+        if (player_choice == computer_choice) { // tie
+            result_beats.innerHTML = (player_choice + " is the same as " + computer_choice + "...");
+            result_battle.innerHTML = ("You tie!");
+        } 
+        // check for battle win
+        else if (((player_choice == "rock") && (computer_choice == "scissors")) || ((player_choice == "scissors") && (computer_choice == "paper")) || ((player_choice == "paper") && (computer_choice == "rock"))) {
+            result_beats.innerHTML = (player_choice + " beats " + computer_choice + "...");
+            result_battle.innerHTML = ("You win!");
+
+            // add 1 point to player_score and check for game over
+           updateScore(player_score);
+           gameOver(player_score);
         }
-
-        else if ((((playerSelection == "rock") && (computerSelection == "scizzors")) || ((playerSelection == "paper") && (computerSelection == "rock"))) || ((playerSelection == "scizzors") && (computerSelection == "paper"))) {
-            return winResult;
-        }
-        
+        // check for battle loss
         else {
-            return loseResult;
+            result_beats.innerHTML = (computer_choice + " beats " + player_choice + "...");
+            result_battle.innerHTML = ("You lose!");
+
+            // add 1 point to computer_score and check for game over
+            updateScore(computer_score);
+            gameOver(computer_score);
         }
+    });
+});
 
-    }
 
-    return score(playerSelection, computerSelection);
-}
-
-function game() {
-    let playerScore = 0;
-    let computerScore = 0;
-    let gameOn = true;
-
-    function tally(roundResult) {
-        if (roundResult.search("win") > 0) {
-            playerScore += 1;
-        } else {
-            computerScore += 1;
-        }
-        console.log("Your score: " + playerScore + ", computer score: " + computerScore);
-    }
-
-    while (gameOn) {
-        if (playerScore > 4) {
-            console.log("You win!");
-            gameOn = false;
-        } else if (computerScore > 4) {
-            console.log("You lose!")
-            gameOn = false;
-        } else {
-            console.log(playRound())
-            tally(playRound())
-        }
-    }
-}
-
-game()
